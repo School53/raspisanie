@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Расписание уроков на 20.11.2026</title>
+<style>
+  :root { --primary: #1a5fb4; --bg: #f4f6f9; --card: #ffffff; --text: #1e293b; --muted: #64748b; }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  body { background: var(--bg); color: var(--text); padding: 16px; max-width: 600px; margin: 0 auto; }
+  .header { background: var(--primary); color: white; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(26,95,180,0.2); }
+  .header h1 { font-size: 20px; margin-bottom: 4px; }
+  .header p { font-size: 14px; opacity: 0.9; }
+  .selector-card { background: var(--card); padding: 16px; border-radius: 16px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+  .selector-card label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; }
+  select { width: 100%; padding: 12px; font-size: 18px; font-weight: bold; border: 2px solid #cbd5e1; border-radius: 12px; background: white; color: var(--text); outline: none; }
+  select:focus { border-color: var(--primary); }
+  .lesson-card { background: var(--card); border-radius: 14px; padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+  .lesson-num { width: 34px; height: 34px; background: #e0edff; color: var(--primary); font-weight: 800; font-size: 16px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-right: 14px; flex-shrink: 0; }
+  .lesson-subj { flex-grow: 1; font-size: 16px; font-weight: 600; line-height: 1.3; }
+  .lesson-cab { background: #f1f5f9; color: #334155; font-weight: 700; font-size: 14px; padding: 6px 10px; border-radius: 8px; margin-left: 10px; white-space: nowrap; }
+  .footer { text-align: center; font-size: 12px; color: var(--muted); margin-top: 24px; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <h1>Расписание уроков</h1>
+    <p>на 20.11.2026</p>
+  </div>
+  <div class="selector-card">
+    <label for="clsSelect">Выберите свой класс:</label>
+    <select id="clsSelect" onchange="renderClass(this.value)"></select>
+  </div>
+  <div id="lessonsContainer"></div>
+  <div class="footer">Отсканировано с информационного стенда</div>
+<script>
+  const DATA = {"1А": [{"num": 2, "subj": "Физ-ра", "cab": "с\\з"}], "1Б": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1В": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1Г": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1Д": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "2А": [{"num": 2, "subj": "Иностранный язык", "cab": "306"}], "2Б": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}], "2В": [{"num": 1, "subj": "Иностранный язык", "cab": "306"}], "2Г": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}], "2Д": [{"num": 2, "subj": "Физ-ра", "cab": "с\\з"}], "3А": [{"num": 4, "subj": "Физ-ра", "cab": "с\\з"}], "3Б": [{"num": 3, "subj": "Музыка", "cab": "207"}, {"num": 5, "subj": "Иностранный язык", "cab": "306"}], "3В": [{"num": 4, "subj": "Иностранный язык", "cab": "306"}], "3Г": [{"num": 3, "subj": "Иностранный язык", "cab": "306"}], "4А": [{"num": 2, "subj": "Музыка", "cab": "207"}], "4В": [{"num": 4, "subj": "Физ-ра", "cab": "с\\з"}], "4Г": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 4, "subj": "Музыка", "cab": "207"}], "4Ж": [{"num": 1, "subj": "Музыка", "cab": "207"}], "5А": [{"num": 1, "subj": "Литература", "cab": "305"}, {"num": 2, "subj": "Математика", "cab": "304"}, {"num": 3, "subj": "История", "cab": "316"}, {"num": 4, "subj": "Русский язык", "cab": "305"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}], "5Б": [{"num": 1, "subj": "Музыка", "cab": "111"}, {"num": 2, "subj": "История", "cab": "316"}, {"num": 3, "subj": "Биология", "cab": "109"}, {"num": 4, "subj": "Математика", "cab": "304"}], "5В": [{"num": 1, "subj": "Математика", "cab": "303"}, {"num": 2, "subj": "Биология", "cab": "109"}, {"num": 3, "subj": "Музыка", "cab": "111"}, {"num": 4, "subj": "История", "cab": "316"}, {"num": 5, "subj": "Русский язык", "cab": "309"}], "5Г": [{"num": 1, "subj": "История", "cab": "314"}, {"num": 2, "subj": "Музыка", "cab": "111"}, {"num": 3, "subj": "Математика", "cab": "303"}, {"num": 4, "subj": "Труд", "cab": "105/307"}, {"num": 5, "subj": "Труд", "cab": "105/307"}], "5Д": [{"num": 1, "subj": "Биология", "cab": "109"}, {"num": 2, "subj": "История", "cab": "314"}, {"num": 3, "subj": "Литература", "cab": "309"}, {"num": 4, "subj": "Русский язык", "cab": "309"}, {"num": 5, "subj": "Музыка", "cab": "111"}], "5М": [{"num": 1, "subj": "Русский язык", "cab": "107"}, {"num": 2, "subj": "Литература", "cab": "107"}, {"num": 3, "subj": "История", "cab": "314"}, {"num": 4, "subj": "Музыка", "cab": "111"}], "6А": [{"num": 1, "subj": "Математика", "cab": "213"}, {"num": 2, "subj": "Литература", "cab": "305"}, {"num": 3, "subj": "Русский язык", "cab": "305"}, {"num": 4, "subj": "Информатика", "cab": "213"}, {"num": 5, "subj": "Биология", "cab": "109"}, {"num": 6, "subj": "Музыка", "cab": "111"}], "6Б": [{"num": 2, "subj": "Литература", "cab": "301"}, {"num": 3, "subj": "Математика", "cab": "214"}, {"num": 4, "subj": "Биология", "cab": "109"}, {"num": 5, "subj": "Информатика", "cab": "213"}, {"num": 6, "subj": "История", "cab": "313"}, {"num": 7, "subj": "История", "cab": "313"}], "6В": [{"num": 2, "subj": "Математика", "cab": "303"}, {"num": 3, "subj": "Информатика", "cab": "213"}, {"num": 4, "subj": "Русский язык", "cab": "107"}, {"num": 5, "subj": "Литература", "cab": "107"}], "6Г": [{"num": 2, "subj": "Труд", "cab": "105/307"}, {"num": 3, "subj": "Труд", "cab": "105/307"}, {"num": 4, "subj": "Математика", "cab": "303"}, {"num": 5, "subj": "Литература", "cab": "305"}, {"num": 6, "subj": "Физ-ра", "cab": "с\\з"}], "6М": [{"num": 1, "subj": "Литература", "cab": "302"}, {"num": 2, "subj": "Русский язык", "cab": "302"}, {"num": 3, "subj": "Математика", "cab": "304"}, {"num": 4, "subj": "История", "cab": "313"}, {"num": 5, "subj": "История", "cab": "313"}], "7А": [{"num": 2, "subj": "Геометрия", "cab": "212"}, {"num": 3, "subj": "Физика", "cab": "207"}, {"num": 4, "subj": "Изобразительное искусство", "cab": "113"}], "7Б": [{"num": 1, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 2, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 3, "subj": "География", "cab": "208"}, {"num": 4, "subj": "Литература", "cab": "309"}, {"num": 5, "subj": "Алгебра", "cab": "111"}], "7В": [{"num": 1, "subj": "География", "cab": "302"}, {"num": 2, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 3, "subj": "Алгебра", "cab": "111"}, {"num": 4, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 5, "subj": "Русский язык", "cab": "210"}, {"num": 6, "subj": "История", "cab": "306"}], "7Г": [{"num": 2, "subj": "История", "cab": "306"}, {"num": 3, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 4, "subj": "Алгебра", "cab": "111"}, {"num": 5, "subj": "География", "cab": "302"}, {"num": 6, "subj": "Русский язык", "cab": "307"}], "7Д": [{"num": 2, "subj": "Алгебра", "cab": "111"}, {"num": 3, "subj": "Русский язык", "cab": "307"}, {"num": 4, "subj": "Физика", "cab": "207"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 6, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 7, "subj": "Химия", "cab": "302"}, {"num": 8, "subj": "География", "cab": "302"}], "8А": [{"num": 1, "subj": "Русский язык", "cab": "308"}, {"num": 2, "subj": "История", "cab": "305"}, {"num": 3, "subj": "ОБЗР", "cab": "109"}, {"num": 4, "subj": "Биология", "cab": "108"}, {"num": 5, "subj": "Практикум по математике", "cab": "213"}, {"num": 6, "subj": "Химия", "cab": "302"}], "8Б": [{"num": 2, "subj": "География", "cab": "208"}, {"num": 3, "subj": "Русский язык", "cab": "308"}, {"num": 4, "subj": "Химия", "cab": "302"}, {"num": 5, "subj": "Иностранный язык", "cab": "112"}, {"num": 6, "subj": "Геометрия", "cab": "213"}, {"num": 7, "subj": "Геометрия", "cab": "213"}], "8В": [{"num": 1, "subj": "История", "cab": "305"}, {"num": 2, "subj": "Химия", "cab": "302"}, {"num": 3, "subj": "Русский язык", "cab": "310"}, {"num": 4, "subj": "География", "cab": "208"}, {"num": 5, "subj": "Геометрия", "cab": "211"}, {"num": 6, "subj": "Физика", "cab": "207"}, {"num": 7, "subj": "Практикум по математике", "cab": "211"}], "8Г": [{"num": 1, "subj": "Информатика", "cab": "202"}, {"num": 2, "subj": "Вероятность и статистика", "cab": "213"}, {"num": 3, "subj": "Химия", "cab": "302"}, {"num": 4, "subj": "Иностранный язык", "cab": "112"}, {"num": 5, "subj": "Русский язык", "cab": "310"}], "8Д": [{"num": 3, "subj": "История", "cab": "306"}, {"num": 4, "subj": "Русский язык", "cab": "210"}, {"num": 5, "subj": "География", "cab": "208"}, {"num": 6, "subj": "Геометрия", "cab": "211"}, {"num": 7, "subj": "Иностранный язык", "cab": "112"}], "8Е": [{"num": 3, "subj": "Иностранный язык", "cab": "112"}, {"num": 4, "subj": "Русский язык", "cab": "310"}, {"num": 5, "subj": "Геометрия", "cab": "214"}, {"num": 6, "subj": "Биология", "cab": "108"}, {"num": 7, "subj": "Физика", "cab": "209"}], "8Ж": [{"num": 1, "subj": "Геометрия", "cab": "214"}, {"num": 2, "subj": "Иностранный язык", "cab": "112"}, {"num": 3, "subj": "Русский язык", "cab": "304"}, {"num": 4, "subj": "История", "cab": "306"}], "8М": [{"num": 2, "subj": "Русский язык", "cab": "311"}, {"num": 3, "subj": "Практикум по математике", "cab": "214"}, {"num": 4, "subj": "Геометрия", "cab": "214"}, {"num": 5, "subj": "ОБЗР", "cab": "109"}, {"num": 6, "subj": "Информатика", "cab": "202"}, {"num": 7, "subj": "История", "cab": "306"}], "9А": [{"num": 1, "subj": "Геометрия", "cab": "209"}, {"num": 2, "subj": "ОБЗР", "cab": "109"}, {"num": 3, "subj": "История", "cab": "305"}, {"num": 4, "subj": "Литература", "cab": "307"}, {"num": 5, "subj": "Алгебра", "cab": "209"}, {"num": 6, "subj": "Геометрия", "cab": "209"}], "9Б": [{"num": 1, "subj": "Литература", "cab": "311"}, {"num": 2, "subj": "Геометрия", "cab": "214"}, {"num": 3, "subj": "Труд", "cab": "110а"}, {"num": 4, "subj": "Физика", "cab": "209"}], "9В": [{"num": 1, "subj": "Вероятность и статистика", "cab": "211"}, {"num": 2, "subj": "Геометрия", "cab": "211"}, {"num": 3, "subj": "Физика", "cab": "209"}, {"num": 4, "subj": "Русский язык", "cab": "308"}, {"num": 5, "subj": "Литература", "cab": "308"}], "9Г": [{"num": 1, "subj": "География", "cab": "208"}, {"num": 2, "subj": "Физика", "cab": "209"}, {"num": 3, "subj": "Литература", "cab": "210"}, {"num": 4, "subj": "Труд", "cab": "110а"}, {"num": 5, "subj": "История", "cab": "304"}], "9М": [{"num": 1, "subj": "Труд", "cab": "110а"}, {"num": 2, "subj": "Литература", "cab": "309"}], "9Ф": [{"num": 1, "subj": "Литература", "cab": "309"}, {"num": 2, "subj": "Труд", "cab": "110а"}, {"num": 3, "subj": "Геометрия", "cab": "211"}, {"num": 4, "subj": "Вероятность и статистика", "cab": "211"}, {"num": 5, "subj": "Биология", "cab": "108"}], "10А": [{"num": 2, "subj": "Литература", "cab": "308"}, {"num": 3, "subj": "Геометрия", "cab": "213"}, {"num": 4, "subj": "ОБЗР", "cab": "109"}, {"num": 5, "subj": "Обществознание и наука", "cab": "306"}, {"num": 6, "subj": "Иностранный язык", "cab": "112"}, {"num": 7, "subj": "Биология", "cab": "108"}], "10Б": [{"num": 3, "subj": "Русский язык в формате ЕГЭ", "cab": "311"}, {"num": 4, "subj": "Информатика", "cab": "202"}, {"num": 5, "subj": "Информатика", "cab": "202"}, {"num": 6, "subj": "Обществознание", "cab": "304"}, {"num": 7, "subj": "Физ-ра", "cab": "с\\з/с\\з"}, {"num": 8, "subj": "История", "cab": "304"}], "10В": [{"num": 1, "subj": "Физика", "cab": "207"}, {"num": 2, "subj": "Русский язык в формате ЕГЭ", "cab": "310"}, {"num": 3, "subj": "Физ-ра", "cab": "с\\з/с\\з"}], "11А": [{"num": 1, "subj": "Иностранный язык", "cab": "112"}, {"num": 2, "subj": "Физика", "cab": "207"}, {"num": 3, "subj": "Информатика", "cab": "202"}, {"num": 4, "subj": "Обществознание", "cab": "304"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}], "11Б": [{"num": 1, "subj": "Геометрия", "cab": "213"}, {"num": 2, "subj": "Информатика", "cab": "202"}, {"num": 3, "subj": "Литература", "cab": "309"}, {"num": 4, "subj": "Геометрия", "cab": "213"}, {"num": 5, "subj": "Физика", "cab": "207"}, {"num": 6, "subj": "Физ-ра", "cab": "с\\з"}], "11В": [{"num": 1, "subj": "Русский язык", "cab": "310"}, {"num": 2, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 3, "subj": "Биология", "cab": "108"}]};
+  const sel = document.getElementById('clsSelect');
+  const container = document.getElementById('lessonsContainer');
+  const classes = Object.keys(DATA);
+  
+  classes.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c;
+    opt.textContent = c + ' класс';
+    sel.appendChild(opt);
+  });
+
+  function renderClass(cls) {
+    localStorage.setItem('saved_school_class', cls);
+    const list = DATA[cls] || [];
+    if (!list.length) {
+      container.innerHTML = '<p style="text-align:center;color:#64748b;">Нет уроков</p>';
+      return;
+    }
+    container.innerHTML = list.map(item => `
+      <div class="lesson-card">
+        <div class="lesson-num">${item.num}</div>
+        <div class="lesson-subj">${item.subj}</div>
+        ${item.cab ? `<div class="lesson-cab">каб. ${item.cab}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  const saved = localStorage.getItem('saved_school_class');
+  if (saved && DATA[saved]) {
+    sel.value = saved;
+  }
+  if (sel.value) renderClass(sel.value);
+</script>
+</body>
+</html>
