@@ -23,7 +23,7 @@
   .btn-share { width: 100%; background: #0077FF; color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
   .tip { background: #eef2ff; color: #3730a3; padding: 12px; border-radius: 12px; font-size: 13px; text-align: center; margin-top: 12px; }
 </style></head><body>
-  <div class="header"><h1>Расписание уроков</h1><p>на 21.11.2026</p><div class="badge">Обновлено: 21.11.2026 в 08:31</div></div>
+  <div class="header"><h1>Расписание уроков</h1><p>на 21.11.2026</p><div class="badge">Обновлено: 21.11.2026 в 08:37</div></div>
   <a href="https://vk.ru/club243545366" target="_blank" style="display:block;text-align:center;background:#0077FF;color:#fff;text-decoration:none;padding:13px;border-radius:12px;font-size:15px;font-weight:700;margin-bottom:12px;">🔔 Получать уведомления ВКонтакте</a>
   <div class="alert-global"><strong>📢 Объявление:</strong><br>Уроков не будет никогда</div>
   <div class="card"><label>Выберите свой класс:</label><select id="cSel" onchange="render(this.value)"></select></div>
@@ -55,70 +55,18 @@
 
   function toggleNotify() {
     localStorage.setItem('n_on', '1');
-    updN();
-    if ('Notification' in window && Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    } else {
-      alert('Уведомления включены!');
-    }
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
-
-  function render(cls) {
-    localStorage.setItem('saved_cls', cls);
-    const ann = Reflect.get(C_ANNS, cls);
-    alEl.innerHTML = ann ? `<div class="alert-class"><strong>ℹ️ Для ${cls}:</strong><br>${ann}</div>` : '';
-    const items = Reflect.get(DATA, cls) || [];
-    const pKey = 'p_' + D_STR + '_' + cls;
-    let prev = {};
-    try { prev = JSON.parse(localStorage.getItem(pKey) || '{}'); } catch(e) {}
-    const hasP = Object.keys(prev).length > 0;
-    const cur = {};
-    let chg = 0;
-
-    listEl.innerHTML = items.map(i => {
-      const s = i.subj + '|' + i.cab;
-      const k = String(i.num);
-      Reflect.set(cur, k, s);
-      const oldS = Reflect.get(prev, k);
-      const isC = hasP && oldS && oldS !== s;
-      if (isC) chg++;
-      return `<div class="lesson ${isC ? 'changed' : ''}"><div class="num">${i.num}</div><div class="subj">${i.subj}${isC ? '<span class="tag-chg">изменено</span>' : ''}</div>${i.cab ? `<div class="cab">каб. ${i.cab}</div>` : ''}</div>`;
-    }).join('');
-
-    localStorage.setItem(pKey, JSON.stringify(cur));
-    const bEl = document.getElementById('chgBanner');
-    if (chg > 0) {
-      bEl.style.display = 'block';
-      bEl.textContent = '🔔 Внимание! В расписании ' + cls + ' появились изменения (уроков: ' + chg + ')';
-      if (lsGet('n_on') === '1' && 'Notification' in window && Notification.permission === 'granted') {
-        new Notification('Изменения в расписании (' + cls + ')', { body: 'Обновлено уроков: ' + chg });
-      }
-    } else {
-      bEl.style.display = 'none';
-    }
-  }
-
-  function shareSched() {
-    const cls = sel.value;
-    const items = Reflect.get(DATA, cls) || [];
-    const lines = [`📅 Расписание ${cls} на ${D_STR}:`];
-    items.forEach(i => {
-      lines.push(`${i.num}. ${i.subj}${i.cab ? ' (' + i.cab + ')' : ''}`);
-    });
-    lines.push('\n🔗 ' + location.href);
-    const txt = lines.join('\n');
-
-    if (navigator.share) {
-      navigator.share({ title: 'Расписание ' + cls, text: txt }).catch(() => {});
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(txt).then(() => alert('Скопировано! Вставьте в чат класса.'));
-    } else {
-      prompt('Скопируйте расписание:', txt);
-    }
-  }
-
   updN();
-  const sv = localStorage.getItem('saved_cls');
-  if (sv && Reflect.has(DATA, sv)) sel.value = sv;
-  if (sel.value) render(sel.value);
+  const sv = lsGet('saved_cls');
+  if (sv) {
+    sel.value = sv;
+  }
+  if (!sel.value && sel.options.length > 0) {
+    sel.selectedIndex = 0;
+  }
+  if (sel.value) {
+    render(sel.value);
+  }
 </script></body></html>
