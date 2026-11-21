@@ -2,14 +2,15 @@
 <html lang="ru"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Расписание на 21.11.2026</title>
 <link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.png">
 <meta name="theme-color" content="#1a5fb4">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
   body { background: #f4f6f9; color: #1e293b; padding: 16px; max-width: 600px; margin: 0 auto; }
   .header { background: #1a5fb4; color: #fff; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 12px; }
   .badge { display: inline-block; background: #22c55e; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; margin-top: 8px; }
-  .btn-notify { width: 100%; background: #10b981; color: #fff; border: none; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
-  .btn-notify.on { background: #e2e8f0; color: #334155; }
+  .btn-vk { display: block; text-align: center; background: #0077FF; color: #fff; text-decoration: none; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; margin-bottom: 10px; }
+  .btn-inst { display: none; width: 100%; background: #10b981; color: #fff; border: none; padding: 13px; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
   .alert-global { background: #fef3c7; border-left: 5px solid #f59e0b; color: #78350f; padding: 14px; border-radius: 12px; margin-bottom: 12px; font-size: 15px; }
   .alert-class { background: #e0f2fe; border-left: 5px solid #0284c7; color: #0c4a6e; padding: 12px; border-radius: 12px; margin-bottom: 12px; font-size: 15px; }
   .card { background: #fff; padding: 16px; border-radius: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
@@ -23,21 +24,26 @@
   .btn-share { width: 100%; background: #0077FF; color: #fff; border: none; padding: 14px; border-radius: 14px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 8px; }
   .tip { background: #eef2ff; color: #3730a3; padding: 12px; border-radius: 12px; font-size: 13px; text-align: center; margin-top: 12px; }
 </style></head><body>
-  <div class="header"><h1>Расписание уроков</h1><p>на 21.11.2026</p><div class="badge">Обновлено: 21.11.2026 в 08:38</div></div>
-  <a href="https://vk.ru/club243545366" target="_blank" style="display:block;text-align:center;background:#0077FF;color:#fff;text-decoration:none;padding:13px;border-radius:12px;font-size:15px;font-weight:700;margin-bottom:12px;">🔔 Получать уведомления ВКонтакте</a>
+  <div class="header"><h1>Расписание уроков</h1><p>на 21.11.2026</p><div class="badge">Обновлено: 21.11.2026 в 09:31</div></div>
+  <a href="https://vk.ru/club243545366" target="_blank" class="btn-vk">🔔 Получать уведомления ВКонтакте</a>
+  <button id="instBtn" class="btn-inst" onclick="installApp()">📲 Установить приложение на экран телефона</button>
   <div class="alert-global"><strong>📢 Объявление:</strong><br>Уроков не будет никогда</div>
   <div class="card"><label>Выберите свой класс:</label><select id="cSel" onchange="render(this.value)"></select></div>
-  <div id="chgBanner" style="display:none;background:#fef08a;border:2px solid #eab308;color:#713f12;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:700;text-align:center;"></div><div id="cAlert"></div><div id="lList"></div>
+  <div id="chgBanner" style="display:none;background:#fef08a;border:2px solid #eab308;color:#713f12;padding:12px;border-radius:12px;margin-bottom:12px;font-weight:700;text-align:center;"></div>
+  <div id="cAlert"></div><div id="lList"></div>
   <button class="btn-share" onclick="shareSched()">📤 Поделиться в чат класса (MAX / VK)</button>
   <div class="tip">💡 Нажмите в меню браузера <b>«Добавить на главный экран»</b>, чтобы открывать как приложение</div>
 <script>
+  function safeGet(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+  function safeSet(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+
   const D_STR = "21.11.2026";
   const DATA = {"1А": [{"num": 2, "subj": "Физ-ра", "cab": "с\\з"}], "1Б": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1В": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1Г": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "1Д": [{"num": 3, "subj": "Физ-ра", "cab": "с\\з"}], "2А": [{"num": 2, "subj": "Иностранный язык", "cab": "306"}], "2Б": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}], "2В": [{"num": 1, "subj": "Иностранный язык", "cab": "306"}], "2Г": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}], "2Д": [{"num": 2, "subj": "Физ-ра", "cab": "с\\з"}], "3А": [{"num": 4, "subj": "Физ-ра", "cab": "с\\з"}], "3Б": [{"num": 3, "subj": "Музыка", "cab": "207"}, {"num": 5, "subj": "Иностранный язык", "cab": "306"}], "3В": [{"num": 4, "subj": "Иностранный язык", "cab": "306"}], "3Г": [{"num": 3, "subj": "Иностранный язык", "cab": "306"}], "4А": [{"num": 2, "subj": "Музыка", "cab": "207"}], "4В": [{"num": 4, "subj": "Физ-ра", "cab": "с\\з"}], "4Г": [{"num": 1, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 4, "subj": "Музыка", "cab": "207"}], "4Ж": [{"num": 1, "subj": "Музыка", "cab": "207"}], "5А": [{"num": 1, "subj": "Литература", "cab": "305"}, {"num": 2, "subj": "Математика", "cab": "304"}, {"num": 3, "subj": "История", "cab": "316"}, {"num": 4, "subj": "Русский язык", "cab": "305"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}], "5Б": [{"num": 1, "subj": "Музыка", "cab": "111"}, {"num": 2, "subj": "История", "cab": "316"}, {"num": 3, "subj": "Биология", "cab": "109"}, {"num": 4, "subj": "Математика", "cab": "304"}], "5В": [{"num": 1, "subj": "Математика", "cab": "303"}, {"num": 2, "subj": "Биология", "cab": "109"}, {"num": 3, "subj": "Музыка", "cab": "111"}, {"num": 4, "subj": "История", "cab": "316"}, {"num": 5, "subj": "Русский язык", "cab": "309"}], "5Г": [{"num": 1, "subj": "История", "cab": "314"}, {"num": 2, "subj": "Музыка", "cab": "111"}, {"num": 3, "subj": "Математика", "cab": "303"}, {"num": 4, "subj": "Труд", "cab": "105/307"}, {"num": 5, "subj": "Труд", "cab": "105/307"}], "5Д": [{"num": 1, "subj": "Биология", "cab": "109"}, {"num": 2, "subj": "История", "cab": "314"}, {"num": 3, "subj": "Литература", "cab": "309"}, {"num": 4, "subj": "Русский язык", "cab": "309"}, {"num": 5, "subj": "Музыка", "cab": "111"}], "5М": [{"num": 1, "subj": "Русский язык", "cab": "107"}, {"num": 2, "subj": "Литература", "cab": "107"}, {"num": 3, "subj": "История", "cab": "314"}, {"num": 4, "subj": "Музыка", "cab": "111"}], "6А": [{"num": 1, "subj": "Математика", "cab": "213"}, {"num": 2, "subj": "Литература", "cab": "305"}, {"num": 3, "subj": "Русский язык", "cab": "305"}, {"num": 4, "subj": "Информатика", "cab": "213"}, {"num": 5, "subj": "Биология", "cab": "109"}, {"num": 6, "subj": "Музыка", "cab": "111"}], "6Б": [{"num": 2, "subj": "Литература", "cab": "301"}, {"num": 3, "subj": "Математика", "cab": "214"}, {"num": 4, "subj": "Биология", "cab": "109"}, {"num": 5, "subj": "Информатика", "cab": "213"}, {"num": 6, "subj": "История", "cab": "313"}, {"num": 7, "subj": "История", "cab": "313"}], "6В": [{"num": 2, "subj": "Математика", "cab": "303"}, {"num": 3, "subj": "Информатика", "cab": "213"}, {"num": 4, "subj": "Русский язык", "cab": "107"}, {"num": 5, "subj": "Литература", "cab": "107"}], "6Г": [{"num": 2, "subj": "Труд", "cab": "105/307"}, {"num": 3, "subj": "Труд", "cab": "105/307"}, {"num": 4, "subj": "Математика", "cab": "303"}, {"num": 5, "subj": "Литература", "cab": "305"}, {"num": 6, "subj": "Физ-ра", "cab": "с\\з"}], "6М": [{"num": 1, "subj": "Литература", "cab": "302"}, {"num": 2, "subj": "Русский язык", "cab": "302"}, {"num": 3, "subj": "Математика", "cab": "304"}, {"num": 4, "subj": "История", "cab": "313"}, {"num": 5, "subj": "История", "cab": "313"}], "7А": [{"num": 2, "subj": "Геометрия", "cab": "212"}, {"num": 3, "subj": "Физика", "cab": "207"}, {"num": 4, "subj": "Изобразительное искусство", "cab": "113"}], "7Б": [{"num": 1, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 2, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 3, "subj": "География", "cab": "208"}, {"num": 4, "subj": "Литература", "cab": "309"}, {"num": 5, "subj": "Алгебра", "cab": "111"}], "7В": [{"num": 1, "subj": "География", "cab": "302"}, {"num": 2, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 3, "subj": "Алгебра", "cab": "111"}, {"num": 4, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 5, "subj": "Русский язык", "cab": "210"}, {"num": 6, "subj": "История", "cab": "306"}], "7Г": [{"num": 2, "subj": "История", "cab": "306"}, {"num": 3, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 4, "subj": "Алгебра", "cab": "111"}, {"num": 5, "subj": "География", "cab": "302"}, {"num": 6, "subj": "Русский язык", "cab": "307"}], "7Д": [{"num": 2, "subj": "Алгебра", "cab": "111"}, {"num": 3, "subj": "Русский язык", "cab": "307"}, {"num": 4, "subj": "Физика", "cab": "207"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 6, "subj": "Изобразительное искусство", "cab": "113"}, {"num": 7, "subj": "Химия", "cab": "302"}, {"num": 8, "subj": "География", "cab": "302"}], "8А": [{"num": 1, "subj": "Русский язык", "cab": "308"}, {"num": 2, "subj": "История", "cab": "305"}, {"num": 3, "subj": "ОБЗР", "cab": "109"}, {"num": 4, "subj": "Биология", "cab": "108"}, {"num": 5, "subj": "Практикум по математике", "cab": "213"}, {"num": 6, "subj": "Химия", "cab": "302"}], "8Б": [{"num": 2, "subj": "География", "cab": "208"}, {"num": 3, "subj": "Русский язык", "cab": "308"}, {"num": 4, "subj": "Химия", "cab": "302"}, {"num": 5, "subj": "Иностранный язык", "cab": "112"}, {"num": 6, "subj": "Геометрия", "cab": "213"}, {"num": 7, "subj": "Геометрия", "cab": "213"}], "8В": [{"num": 1, "subj": "История", "cab": "305"}, {"num": 2, "subj": "Химия", "cab": "302"}, {"num": 3, "subj": "Русский язык", "cab": "310"}, {"num": 4, "subj": "География", "cab": "208"}, {"num": 5, "subj": "Геометрия", "cab": "211"}, {"num": 6, "subj": "Физика", "cab": "207"}, {"num": 7, "subj": "Практикум по математике", "cab": "211"}], "8Г": [{"num": 1, "subj": "Информатика", "cab": "202"}, {"num": 2, "subj": "Вероятность и статистика", "cab": "213"}, {"num": 3, "subj": "Химия", "cab": "302"}, {"num": 4, "subj": "Иностранный язык", "cab": "112"}, {"num": 5, "subj": "Русский язык", "cab": "310"}], "8Д": [{"num": 3, "subj": "История", "cab": "306"}, {"num": 4, "subj": "Русский язык", "cab": "210"}, {"num": 5, "subj": "География", "cab": "208"}, {"num": 6, "subj": "Геометрия", "cab": "211"}, {"num": 7, "subj": "Иностранный язык", "cab": "112"}], "8Е": [{"num": 3, "subj": "Иностранный язык", "cab": "112"}, {"num": 4, "subj": "Русский язык", "cab": "310"}, {"num": 5, "subj": "Геометрия", "cab": "214"}, {"num": 6, "subj": "Биология", "cab": "108"}, {"num": 7, "subj": "Физика", "cab": "209"}], "8Ж": [{"num": 1, "subj": "Геометрия", "cab": "214"}, {"num": 2, "subj": "Иностранный язык", "cab": "112"}, {"num": 3, "subj": "Русский язык", "cab": "304"}, {"num": 4, "subj": "История", "cab": "306"}], "8М": [{"num": 2, "subj": "Русский язык", "cab": "311"}, {"num": 3, "subj": "Практикум по математике", "cab": "214"}, {"num": 4, "subj": "Геометрия", "cab": "214"}, {"num": 5, "subj": "ОБЗР", "cab": "109"}, {"num": 6, "subj": "Информатика", "cab": "202"}, {"num": 7, "subj": "История", "cab": "306"}], "9А": [{"num": 1, "subj": "Геометрия", "cab": "209"}, {"num": 2, "subj": "ОБЗР", "cab": "109"}, {"num": 3, "subj": "История", "cab": "305"}, {"num": 4, "subj": "Литература", "cab": "307"}, {"num": 5, "subj": "Алгебра", "cab": "209"}, {"num": 6, "subj": "Геометрия", "cab": "209"}], "9Б": [{"num": 1, "subj": "Литература", "cab": "311"}, {"num": 2, "subj": "Геометрия", "cab": "214"}, {"num": 3, "subj": "Труд", "cab": "110а"}, {"num": 4, "subj": "Физика", "cab": "209"}], "9В": [{"num": 1, "subj": "Вероятность и статистика", "cab": "211"}, {"num": 2, "subj": "Геометрия", "cab": "211"}, {"num": 3, "subj": "Физика", "cab": "209"}, {"num": 4, "subj": "Русский язык", "cab": "308"}, {"num": 5, "subj": "Литература", "cab": "308"}], "9Г": [{"num": 1, "subj": "География", "cab": "208"}, {"num": 2, "subj": "Физика", "cab": "209"}, {"num": 3, "subj": "Литература", "cab": "210"}, {"num": 4, "subj": "Труд", "cab": "110а"}, {"num": 5, "subj": "История", "cab": "304"}], "9М": [{"num": 1, "subj": "Труд", "cab": "110а"}, {"num": 2, "subj": "Литература", "cab": "309"}], "9Ф": [{"num": 1, "subj": "Литература", "cab": "309"}, {"num": 2, "subj": "Труд", "cab": "110а"}, {"num": 3, "subj": "Геометрия", "cab": "211"}, {"num": 4, "subj": "Вероятность и статистика", "cab": "211"}, {"num": 5, "subj": "Биология", "cab": "108"}], "10А": [{"num": 2, "subj": "Литература", "cab": "308"}, {"num": 3, "subj": "Геометрия", "cab": "213"}, {"num": 4, "subj": "ОБЗР", "cab": "109"}, {"num": 5, "subj": "Обществознание и наука", "cab": "306"}, {"num": 6, "subj": "Иностранный язык", "cab": "112"}, {"num": 7, "subj": "Биология", "cab": "108"}], "10Б": [{"num": 3, "subj": "Русский язык в формате ЕГЭ", "cab": "311"}, {"num": 4, "subj": "Информатика", "cab": "202"}, {"num": 5, "subj": "Информатика", "cab": "202"}, {"num": 6, "subj": "Обществознание", "cab": "304"}, {"num": 7, "subj": "Физ-ра", "cab": "с\\з/с\\з"}, {"num": 8, "subj": "История", "cab": "304"}], "10В": [{"num": 1, "subj": "Физика", "cab": "207"}, {"num": 2, "subj": "Русский язык в формате ЕГЭ", "cab": "310"}, {"num": 3, "subj": "Физ-ра", "cab": "с\\з/с\\з"}], "11А": [{"num": 1, "subj": "Иностранный язык", "cab": "112"}, {"num": 2, "subj": "Физика", "cab": "207"}, {"num": 3, "subj": "Информатика", "cab": "202"}, {"num": 4, "subj": "Обществознание", "cab": "304"}, {"num": 5, "subj": "Физ-ра", "cab": "с\\з"}], "11Б": [{"num": 1, "subj": "Геометрия", "cab": "213"}, {"num": 2, "subj": "Информатика", "cab": "202"}, {"num": 3, "subj": "Литература", "cab": "309"}, {"num": 4, "subj": "Геометрия", "cab": "213"}, {"num": 5, "subj": "Физика", "cab": "207"}, {"num": 6, "subj": "Физ-ра", "cab": "с\\з"}], "11В": [{"num": 1, "subj": "Русский язык", "cab": "310"}, {"num": 2, "subj": "Физ-ра", "cab": "с\\з"}, {"num": 3, "subj": "Биология", "cab": "108"}]};
   const C_ANNS = {};
   const sel = document.getElementById('cSel');
   const listEl = document.getElementById('lList');
   const alEl = document.getElementById('cAlert');
-  const nBtn = document.getElementById('nBtn');
+  const instBtn = document.getElementById('instBtn');
 
   Object.keys(DATA).forEach(c => {
     const o = document.createElement('option');
@@ -46,27 +52,79 @@
     sel.appendChild(o);
   });
 
-  function updN() {
-    if (localStorage.getItem('n_on') === '1') {
-      nBtn.classList.add('on');
-      nBtn.textContent = '✅ Уведомления об изменениях включены';
+  let deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    instBtn.style.display = 'block';
+  });
+
+  function installApp() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(() => {
+      deferredPrompt = null;
+      instBtn.style.display = 'none';
+    });
+  }
+
+  function render(cls) {
+    safeSet('saved_cls', cls);
+    const ann = Reflect.get(C_ANNS, cls);
+    alEl.innerHTML = ann ? `<div class="alert-class"><strong>ℹ️ Для ${cls}:</strong><br>${ann}</div>` : '';
+    const items = Reflect.get(DATA, cls) || [];
+    const pKey = 'p_' + D_STR + '_' + cls;
+    let prev = {};
+    try { prev = JSON.parse(safeGet(pKey) || '{}'); } catch(e) {}
+    const hasP = Object.keys(prev).length > 0;
+    const cur = {};
+    let chg = 0;
+
+    listEl.innerHTML = items.map(i => {
+      const s = i.subj + '|' + i.cab;
+      const k = String(i.num);
+      Reflect.set(cur, k, s);
+      const oldS = Reflect.get(prev, k);
+      const isC = hasP && oldS && oldS !== s;
+      if (isC) chg++;
+      return `<div class="lesson ${isC ? 'changed' : ''}"><div class="num">${i.num}</div><div class="subj">${i.subj}${isC ? '<span class="tag-chg">изменено</span>' : ''}</div>${i.cab ? `<div class="cab">каб. ${i.cab}</div>` : ''}</div>`;
+    }).join('');
+
+    safeSet(pKey, JSON.stringify(cur));
+    const bEl = document.getElementById('chgBanner');
+    if (chg > 0) {
+      bEl.style.display = 'block';
+      bEl.textContent = '🔔 Внимание! В расписании ' + cls + ' появились изменения (уроков: ' + chg + ')';
+    } else {
+      bEl.style.display = 'none';
     }
   }
 
-  function toggleNotify() {
-    localStorage.setItem('n_on', '1');
-    if ('serviceWorker' in navigator) {
+  function shareSched() {
+    const cls = sel.value;
+    const items = Reflect.get(DATA, cls) || [];
+    const lines = [`📅 Расписание ${cls} на ${D_STR}:`];
+    items.forEach(i => {
+      lines.push(`${i.num}. ${i.subj}${i.cab ? ' (' + i.cab + ')' : ''}`);
+    });
+    lines.push('\n🔗 Сайт: ' + location.href);
+    const txt = lines.join('\n');
+
+    if (navigator.share) {
+      navigator.share({ title: 'Расписание ' + cls, text: txt }).catch(() => {});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(txt).then(() => alert('Скопировано! Вставьте в чат класса.'));
+    } else {
+      prompt('Скопируйте расписание:', txt);
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./sw.js').catch(() => {});
   }
-  updN();
-  const sv = lsGet('saved_cls');
-  if (sv) {
-    sel.value = sv;
-  }
-  if (!sel.value && sel.options.length > 0) {
-    sel.selectedIndex = 0;
-  }
-  if (sel.value) {
-    render(sel.value);
-  }
+
+  const sv = safeGet('saved_cls');
+  if (sv && Reflect.has(DATA, sv)) sel.value = sv;
+  if (!sel.value && sel.options.length > 0) sel.selectedIndex = 0;
+  if (sel.value) render(sel.value);
 </script></body></html>
